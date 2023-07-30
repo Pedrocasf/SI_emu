@@ -6,3 +6,4 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+minifb = { git = "https://github.com/emoon/rust_minifb.git", rev="daf54c4", default-features = false, features = ["x11"] }
