@@ -1,3 +1,6 @@
+extern crate i8080_core;
+pub mod si;
+use si::SI;
 use minifb::{Key, Window, WindowOptions};
 
 const WIDTH: usize = 256;

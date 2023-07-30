@@ -7,4 +7,4 @@ edition = "2021"
 
 [dependencies]
 minifb = { git = "https://github.com/emoon/rust_minifb.git", rev="daf54c4", default-features = false, features = ["x11"] }
-i8080_core = { path = "./i8080_core"}
+i8080_core = { path = "i8080_core"}

@@ -1,5 +1,6 @@
 {
     "rust-analyzer.linkedProjects": [
         "./i8080_core/Cargo.toml"
-    ]
+    ],
+    "rust-analyzer.showUnlinkedFileNotification": false
 }
