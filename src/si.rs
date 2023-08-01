@@ -17,7 +17,7 @@ impl SI{
     pub fn new()->SI{
         let mut si = SI{
             cpu:CPU::new(0,0),
-            mem:[0;0x4000],
+            mem:[0x76;0x4000],
             shamt:0,
             shift_reg:0,
             watchdog:0xFF
@@ -40,7 +40,7 @@ impl SI{
         }
     }
     pub fn get_px(&mut self, coords:u16) -> bool{
-        (self.mem[0x2000+(coords>>3) as usize] >> (coords & 7)) == 1
+        ((self.mem[0x2000+(coords>>3) as usize] >> (coords & 7)) & 1) == 1
     }
     pub fn run_instr(&mut self){
         let m = &mut self.mem;
@@ -68,7 +68,7 @@ impl SI{
                 },
                 _ => panic!("unimplemented IO {:02X}", self.cpu.out_strobe.1)
             }
+            self.cpu.set_input_n(Self::SHIF_REG_R_ADDR as u8, (self.shift_reg >> (8-self.shamt)) as u8)
         }
-        self.cpu.set_input_n(Self::SHIF_REG_R_ADDR as u8, (self.shift_reg >> (8-self.shamt)) as u8)
     }
 }
