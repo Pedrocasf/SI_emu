@@ -2,9 +2,13 @@ use crate::i8080_core;
 use i8080_core::cpu::CPU;
 use log::error;
 use std::fs;
+use std::ops::{Index, IndexMut};
+use std::process::Output;
+
 pub struct SI{
     cpu:CPU,
-    pub mem:[u8;0x4000],
+    pub rom:[u8;0x2000],
+    ram:[u8;0x2000],
     shamt:u8,
     shift_reg:u16,
     watchdog:u8
@@ -17,24 +21,25 @@ impl SI{
     pub fn new()->SI{
         let mut si = SI{
             cpu:CPU::new(0,0),
-            mem:[0x76;0x4000],
+            rom:[0x76;0x2000],
+            ram:[0;0x2000],
             shamt:0,
             shift_reg:0,
             watchdog:0xFF
         };
         let rom_h = fs::read("./roms/invaders.h").unwrap();
-        si.mem[0..0x800].copy_from_slice(&rom_h);
+        si.rom[0..0x800].copy_from_slice(&rom_h);
         let rom_g = fs::read("./roms/invaders.g").unwrap();
-        si.mem[0x800..0x1000].copy_from_slice(&rom_g);
+        si.rom[0x800..0x1000].copy_from_slice(&rom_g);
         let rom_f = fs::read("./roms/invaders.f").unwrap();
-        si.mem[0x1000..0x1800].copy_from_slice(&rom_f);
+        si.rom[0x1000..0x1800].copy_from_slice(&rom_f);
         let rom_e = fs::read("./roms/invaders.e").unwrap();
-        si.mem[0x1800..0x2000].copy_from_slice(&rom_e);
+        si.rom[0x1800..0x2000].copy_from_slice(&rom_e);
         si
     }
     pub fn interrupt(&mut self, number:u8){
         if self.cpu.interrupt_enabled{
-            let m = &mut self.mem;
+            let m = &mut self.;
             self.cpu.instruction = number;
             self.cpu.rst(m);
         }
@@ -42,7 +47,7 @@ impl SI{
     pub fn get_px(&mut self, coords:u16) -> bool{
         ((self.mem[0x2000+(coords>>3) as usize] >> (coords & 7)) & 1) == 1
     }
-    pub fn run_instr(&mut self){
+    pub fn run_instr(&mut self) -> u32{
         let m = &mut self.mem;
         if self.watchdog == 0{
             self.cpu.instruction = 0xC7;
@@ -69,6 +74,27 @@ impl SI{
                 _ => panic!("unimplemented IO {:02X}", self.cpu.out_strobe.1)
             }
             self.cpu.set_input_n(Self::SHIF_REG_R_ADDR as u8, (self.shift_reg >> (8-self.shamt)) as u8)
+        }
+    }
+}
+impl Index<u16> for SI{
+    type Output = u8;
+    fn index(&self, index:u16) -> &Self::Output {
+        match index & 0x3FFF {
+            0x0000..0x2000 => &self.rom[index as usize],
+            0x2000..0x4000 => &self.ram[]
+        }
+
+    }
+}
+
+}
+impl IndexMut<u16, Output=u8> for SI{
+    fn index_mut(&mut self, index:u16) -> &mut Output{
+        match index & 0x3FFF {
+            0..0x2000 => {
+
+            }
         }
     }
 }

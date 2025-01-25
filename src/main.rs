@@ -25,8 +25,9 @@ fn main() {
     window.limit_update_rate(Some(std::time::Duration::from_micros(16666)));
     let mut s_i = SI::new();
     while window.is_open() && !window.is_key_down(Key::Escape) {
-        for i in 0..4167{
-            s_i.run_instr();
+        let mut i = 0;
+        while i < 8333 {
+            i += s_i.run_instr();
         }
         for (i,px) in buffer.iter_mut().enumerate() {
             if i == WIDTH * HEIGHT / 2{
